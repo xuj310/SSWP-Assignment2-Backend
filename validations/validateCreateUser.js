@@ -30,7 +30,7 @@ const createUserSchema = Joi.object({
     .min(6)
     .max(30)
     .messages({
-      "string.empty": "Phone number is required.",
+      "string.empty": "Password is required.",
       "string.min": "Password must be at least 6 characters long.",
       "string.max": "Password must not exceed 30 characters.",
     })

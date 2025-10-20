@@ -4,6 +4,7 @@ const { db } = require("./config/db");
 const app = express();
 const PORT = 3000;
 const userRoutes = require("./routes/userRoutes");
+const productRoutes = require("./routes/productRoutes");
 const helmet = require("helmet");
 const cors = require("cors");
 
@@ -16,6 +17,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/api", userRoutes);
+app.use("/api", productRoutes);
 
 // Global error handler. Such as if invalid json is passed in
 app.use((err, req, res, next) => {

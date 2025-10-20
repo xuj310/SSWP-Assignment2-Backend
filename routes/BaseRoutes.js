@@ -7,7 +7,7 @@ class BaseRoutes {
 
   // Sets up the routes
   setupRoutes(routes) {
-    routes.forEach(({ method, path, middlewares, handler }) => {
+    routes.forEach(({ method, path, middlewares = [], handler }) => {
       this.router[method](path, ...middlewares, handler);
     });
   }

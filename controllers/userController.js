@@ -1,4 +1,4 @@
-const { User } = require("../models/userModel");
+
 const { db } = require("../config/db");
 const { hashPassword } = require("../utilities");
 const jwt = require("jsonwebtoken");
@@ -128,8 +128,8 @@ exports.updateUser = async (req, res) => {
     // Changing the fields is optional
     const updateFields = {};
     if (req.body.name) updateFields.name = req.body.name;
-    if (req.body.phoneNum) updateFields.phoneNum = req.body.phoneNum;
-    if (req.body.age) updateFields.age = req.body.age;
+    if (req.body.phoneNum) updateFields.email = req.body.phoneNum;
+    if (req.body.email) updateFields.email = req.body.email;
     if (req.body.password) updateFields.password = hashedPassword;
 
     const userId = req.query.id;
