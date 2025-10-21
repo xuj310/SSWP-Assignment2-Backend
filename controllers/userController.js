@@ -1,4 +1,3 @@
-
 const { db } = require("../config/db");
 const { hashPassword } = require("../utilities");
 const jwt = require("jsonwebtoken");
@@ -91,6 +90,7 @@ exports.createUser = async (req, res) => {
           _id: newUserRef.id,
           name: newUserData.name,
           phoneNum: newUserData.phoneNum,
+          role: newUserData.role,
         },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_SECRET_EXPIRE }
@@ -189,11 +189,9 @@ exports.loginUser = async (req, res) => {
       : null;
 
     if (existingToken) {
-      let decoded;
-
       // If there's a token, validate it
       try {
-        decoded = jwt.verify(existingToken, process.env.JWT_SECRET);
+        jwt.verify(existingToken, process.env.JWT_SECRET);
       } catch (err) {
         console.warn("Invalid or expired token:", err.message);
         return res.status(401).json({
@@ -228,6 +226,7 @@ exports.loginUser = async (req, res) => {
         _id: userDoc.id,
         name: user.name,
         phoneNum: user.phoneNum,
+        role: user.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_SECRET_EXPIRE }

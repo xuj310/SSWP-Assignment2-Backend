@@ -22,7 +22,7 @@ exports.getProducts = async (req, res) => {
       const productData = productDoc.data();
 
       return res.json({
-        imgUrl: productDoc.imgUrl,
+        imgUrl: productData.imgUrl,
         id: productDoc.id,
         title: productData.title,
         description: productData.description,
@@ -38,7 +38,7 @@ exports.getProducts = async (req, res) => {
 
     snapshot.forEach((user) => {
       products.push({
-        imgUrl: user.imgUrl,
+        imgUrl: user.data().imgUrl,
         id: user.id,
         title: user.data().title,
         description: user.data().description,
