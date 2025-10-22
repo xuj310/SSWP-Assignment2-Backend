@@ -31,7 +31,7 @@ exports.getProducts = async (req, res) => {
       });
     }
 
-    // All users in alphabetical order
+    // Sorted users
     const snapshot = await productsRef.orderBy("title", "asc").get();
 
     let products = [];
@@ -94,7 +94,10 @@ exports.updateProduct = async (req, res) => {
     if (req.body.description) updateFields.description = req.body.description;
     if (req.body.title) updateFields.title = req.body.title;
     if (req.body.price) updateFields.price = req.body.price;
-    if (req.body.onSale) updateFields.onSale = onSale;
+    if (req.body.onSale) {
+      const onSale = req.body.onSale === "true"; 
+      updateFields.onSale = onSale;
+    }
 
     const productId = req.query.id;
     const productRef = db.collection("products").doc(productId);

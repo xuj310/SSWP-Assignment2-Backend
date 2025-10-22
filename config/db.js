@@ -13,16 +13,15 @@ try {
   console.log("Firebase Admin initialized successfully");
   db = admin.firestore();
 
-  // ✅ Await the Promise to access collections
   db.listCollections()
     .then((collections) => {
       console.log(
-        "✅ Firestore is working. Collections:",
+        "Firestore is working. Collections:",
         collections.map((c) => c.id)
       );
     })
     .catch((error) => {
-      console.error("❌ Firestore connection failed:", error.message);
+      console.error("Firestore connection failed:", error.message);
     });
 } catch (error) {
   console.error("Firebase Admin initialization failed: ", error);

@@ -128,8 +128,9 @@ exports.updateUser = async (req, res) => {
     // Changing the fields is optional
     const updateFields = {};
     if (req.body.name) updateFields.name = req.body.name;
-    if (req.body.phoneNum) updateFields.email = req.body.phoneNum;
+    if (req.body.phoneNum) updateFields.phoneNum = req.body.phoneNum;
     if (req.body.email) updateFields.email = req.body.email;
+    if (req.body.role) updateFields.role = req.body.role;
     if (req.body.password) updateFields.password = hashedPassword;
 
     const userId = req.query.id;
@@ -142,6 +143,26 @@ exports.updateUser = async (req, res) => {
 
     await userRef.update(updateFields);
 
+    // Generate a new login token for the user
+    let token;
+    try {
+      token = jwt.sign(
+        {
+          _id: userId,
+          name: userDoc.data().name,
+          phoneNum: userDoc.data().phoneNum,
+          role: userDoc.data().role,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_SECRET_EXPIRE }
+      );
+    } catch (error) {
+      return res.status(500).json({
+        error: "Token generation failed",
+        details: error.message,
+      });
+    }
+
     const updatedDoc = await userRef.get();
     const updatedUser = {
       id: updatedDoc.id,
@@ -151,6 +172,7 @@ exports.updateUser = async (req, res) => {
     return res.status(200).json({
       message: "User updated successfully",
       updatedUser,
+      token,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

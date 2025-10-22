@@ -2,13 +2,14 @@ require("dotenv").config();
 const express = require('express');
 const { db } = require("./config/db");
 const app = express();
-const PORT = 3000;
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
 const helmet = require("helmet");
 const cors = require("cors");
+const morgan = require('morgan');
 
 // Middleware
+app.use(morgan('dev'));
 app.use(express.json());
 // Enable CORS
 app.use(cors());
@@ -27,25 +28,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// // Test endpoint to fetch all documents from 'test' collection
-// app.get('/test', async (req, res) => {
-//   try {
-//     const snapshot = await admin.collection('test').get();
-//     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-//     res.status(200).json(data);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
 // Root endpoint
 app.get('/', (req, res) => {
   res.send('Firestore API is running');
 });
 
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 // Start server
 app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+  console.log(`Server listening on http://localhost:${port}`);
 });
