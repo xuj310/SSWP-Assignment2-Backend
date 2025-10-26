@@ -166,20 +166,16 @@ exports.updateProduct = async (req, res) => {
           }
         });
       }
-    } else {
-      // Reuse existing image if no new file is uploaded
-      downloadURL = productDoc.data().downloadURL;
     }
 
-    // Create new document with auto-generated ID
-    const newProductData = {
-      title,
-      description,
-      price,
-      onSale: onSaleBool,
-      inStock,
-      downloadURL,
-    };
+    // Create update object with only provided fields
+    const newProductData = {};
+    if (title !== undefined) newProductData.title = title;
+    if (description !== undefined) newProductData.description = description;
+    if (price !== undefined) newProductData.price = price;
+    if (onSale !== undefined) newProductData.onSale = onSaleBool;
+    if (inStock !== undefined) newProductData.inStock = inStock;
+    if (downloadURL) newProductData.downloadURL = downloadURL;
 
     await productRef.update(newProductData);
 
