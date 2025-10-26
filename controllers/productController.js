@@ -34,8 +34,19 @@ exports.getProducts = async (req, res) => {
       });
     }
 
-    // Sorted users
-    const snapshot = await productsRef.orderBy("title", "asc").get();
+    // Apply filters if provided
+    let queryRef = productsRef;
+
+    if (req.query.onSale === "true") {
+      queryRef = queryRef.where("onSale", "==", true).orderBy("price", "asc");
+    } else if (req.query.inStock === "true") {
+      queryRef = queryRef.where("inStock", "==", true).orderBy("price", "asc");
+    } else {
+      queryRef = queryRef.orderBy("price", "asc");
+    }
+
+    // Sorted products
+    const snapshot = await queryRef.orderBy("title", "asc").get();
 
     let products = [];
 
@@ -50,7 +61,7 @@ exports.getProducts = async (req, res) => {
       });
     });
 
-    // If there's no id provided, return all users
+    // If there's no id provided, return all products
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: "Server error: " + error, error });
