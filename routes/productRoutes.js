@@ -2,8 +2,11 @@ const BaseRoutes = require("./BaseRoutes");
 const productControllers = require("../controllers/productController");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+const middlewares = {
+  checkUserAdmin: require("../middleware/checkUserAdmin")
+};
 
-const eventValidations = {
+const productValidations = {
   requireId: require("../validations/requireId"),
   validateLogin: require("../validations/validateLogin"),
   validateCreateProduct: require("../validations/validateCreateProduct"),
@@ -25,8 +28,9 @@ class productRoutes extends BaseRoutes {
         path: "/products",
         middlewares: [
           upload.single("image"),
-          eventValidations.validateLogin,
-          eventValidations.validateCreateProduct,
+          productValidations.validateLogin,
+          middlewares.checkUserAdmin,
+          productValidations.validateCreateProduct,
         ],
         handler: productControllers.createProduct,
       },
@@ -35,9 +39,10 @@ class productRoutes extends BaseRoutes {
         path: "/products",
         middlewares: [
           upload.single("image"),
-          eventValidations.requireId,
-          eventValidations.validateLogin,
-          eventValidations.validateUpdateProduct,
+          productValidations.requireId,
+          productValidations.validateLogin,
+          middlewares.checkUserAdmin,
+          productValidations.validateUpdateProduct,
         ],
         handler: productControllers.updateProduct,
       },
@@ -45,8 +50,9 @@ class productRoutes extends BaseRoutes {
         method: "delete",
         path: "/products",
         middlewares: [
-          eventValidations.requireId,
-          eventValidations.validateLogin,
+          productValidations.requireId,
+          productValidations.validateLogin,
+          middlewares.checkUserAdmin
         ],
         handler: productControllers.deleteProduct,
       },
