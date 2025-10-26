@@ -31,6 +31,7 @@ exports.getProducts = async (req, res) => {
         description: productData.description,
         price: productData.price,
         onSale: productData.onSale,
+        inStock: productData.inStock,
       });
     }
 
@@ -58,6 +59,7 @@ exports.getProducts = async (req, res) => {
         description: user.data().description,
         price: user.data().price,
         onSale: user.data().onSale,
+        inStock: user.data().inStock,
       });
     });
 
@@ -74,7 +76,7 @@ exports.createProduct = async (req, res) => {
     const path = require("path");
 
     // Extract fields from form data
-    const { title, description, price, onSale } = req.body;
+    const { title, description, price, onSale, inStock } = req.body;
 
     // Get uploaded image file from multer
     const imageFile = req.file;
@@ -108,6 +110,7 @@ exports.createProduct = async (req, res) => {
       description,
       price,
       onSale,
+      inStock,
       downloadURL,
     };
     const newProductRef = await productsRef.add(newProductData);
@@ -130,7 +133,7 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     // Extract fields from form data
-    const { title, description, price, onSale } = req.body;
+    const { title, description, price, onSale, inStock } = req.body;
 
     const productId = req.query.id;
     const productRef = db.collection("products").doc(productId);
@@ -171,6 +174,7 @@ exports.updateProduct = async (req, res) => {
       description,
       price,
       onSale,
+      inStock,
       downloadURL,
     };
 
