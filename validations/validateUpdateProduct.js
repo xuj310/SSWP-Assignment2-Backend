@@ -2,11 +2,6 @@ const Joi = require("joi");
 
 const updateProductSchema = Joi.object({
   id: Joi.string(),
-  imgUrl: Joi.string()
-    .messages({
-      "string.empty": "An image url is required.",
-    })
-    .required(),
   title: Joi.string().min(3).max(50).messages({
     "string.min": "Title must be at least 3 characters long.",
     "string.max": "Title must not exceed 50 characters.",

@@ -68,16 +68,13 @@ exports.createProduct = async (req, res) => {
     // Get uploaded image file from multer
     const imageFile = req.file;
     if (!imageFile) {
-      return res.status(500).json({ message: "No image file uploaded" });
+      return res.status(500).json({ errors: ["No image file uploaded"] });
     }
-
-    // Construct image URL (assuming static serving from /uploads)
-    const imgUrl = `/uploads/${imageFile.filename}`;
 
     // Upload to Cloudinary using filename only
     const uploadResult = await cloudinaryImageUpload(imageFile.filename);
 
-    // ✅ Delete local file if Cloudinary upload succeeded
+    // Delete local file if Cloudinary upload succeeded
     if (uploadResult && uploadResult.success === true) {
       const localPath = path.join("uploads", imageFile.filename);
       fs.unlink(localPath, (err) => {
@@ -121,16 +118,8 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
-    // Changing the fields is optional
-    const updateFields = {};
-    if (req.body.imgUrl) updateFields.imgUrl = req.body.imgUrl;
-    if (req.body.description) updateFields.description = req.body.description;
-    if (req.body.title) updateFields.title = req.body.title;
-    if (req.body.price) updateFields.price = req.body.price;
-    if (req.body.onSale) {
-      const onSale = req.body.onSale === "true";
-      updateFields.onSale = onSale;
-    }
+    // Extract fields from form data
+    const { title, description, price, onSale } = req.body;
 
     const productId = req.query.id;
     const productRef = db.collection("products").doc(productId);
@@ -140,7 +129,41 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    await productRef.update(updateFields);
+    // Get uploaded image file from multer
+    const imageFile = req.file;
+    let downloadURL;
+
+    if (imageFile) {
+      // Upload to Cloudinary using filename only
+      const uploadResult = await cloudinaryImageUpload(imageFile.filename);
+      downloadURL = uploadResult.data.secure_url;
+
+      // Delete local file if Cloudinary upload succeeded
+      if (uploadResult && uploadResult.success === true) {
+        const localPath = path.join("uploads", imageFile.filename);
+        fs.unlink(localPath, (err) => {
+          if (err) {
+            console.error("Failed to delete local file:", err.message);
+          } else {
+            console.log("Local file deleted:", imageFile.filename);
+          }
+        });
+      }
+    } else {
+      // Reuse existing image if no new file is uploaded
+      downloadURL = productDoc.data().downloadURL;
+    }
+
+    // Create new document with auto-generated ID
+    const newProductData = {
+      title,
+      description,
+      price,
+      onSale,
+      downloadURL,
+    };
+
+    await productRef.update(newProductData);
 
     const updatedDoc = await productRef.get();
     const updatedProduct = {

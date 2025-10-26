@@ -34,6 +34,7 @@ class productRoutes extends BaseRoutes {
         method: "put",
         path: "/products",
         middlewares: [
+          upload.single("image"),
           eventValidations.requireId,
           eventValidations.validateLogin,
           eventValidations.validateUpdateProduct,
