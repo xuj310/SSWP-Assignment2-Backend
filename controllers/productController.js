@@ -77,6 +77,8 @@ exports.createProduct = async (req, res) => {
 
     // Extract fields from form data
     const { title, description, price, onSale, inStock } = req.body;
+    const onSaleBool = onSale === "true"; // Ensure onSale is boolean
+    const inStockBool = inStock === "true"; // Ensure inStock is boolean
 
     // Get uploaded image file from multer
     const imageFile = req.file;
@@ -109,8 +111,8 @@ exports.createProduct = async (req, res) => {
       title,
       description,
       price,
-      onSale,
-      inStock,
+      onSale: onSaleBool,
+      inStock: inStockBool,
       downloadURL,
     };
     const newProductRef = await productsRef.add(newProductData);
@@ -134,6 +136,7 @@ exports.updateProduct = async (req, res) => {
   try {
     // Extract fields from form data
     const { title, description, price, onSale, inStock } = req.body;
+    const onSaleBool = onSale === "true"; // Ensure onSale is boolean
 
     const productId = req.query.id;
     const productRef = db.collection("products").doc(productId);
@@ -173,7 +176,7 @@ exports.updateProduct = async (req, res) => {
       title,
       description,
       price,
-      onSale,
+      onSale: onSaleBool,
       inStock,
       downloadURL,
     };

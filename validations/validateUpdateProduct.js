@@ -17,6 +17,7 @@ const updateProductSchema = Joi.object({
     "number.base": "Price in Dollars (AUD) is required.",
   }),
   onSale: Joi.boolean(),
+  inStock: Joi.boolean()
 });
 
 const validateUpdateProduct = (req, res, next) => {

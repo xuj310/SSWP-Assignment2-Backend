@@ -24,6 +24,7 @@ const createProductSchema = Joi.object({
     })
     .required(),
   onSale: Joi.boolean().required(),
+  inStock: Joi.boolean().required(),
 });
 
 const validateCreateProduct = (req, res, next) => {
