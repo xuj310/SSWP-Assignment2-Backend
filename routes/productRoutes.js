@@ -3,7 +3,7 @@ const productControllers = require("../controllers/productController");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 const middlewares = {
-  checkUserAdmin: require("../middleware/checkUserAdmin")
+  checkUserAdmin: require("../middleware/checkUserAdmin"),
 };
 
 const productValidations = {
@@ -27,9 +27,9 @@ class productRoutes extends BaseRoutes {
         method: "post",
         path: "/products",
         middlewares: [
-          upload.single("image"),
           productValidations.validateLogin,
           middlewares.checkUserAdmin,
+          upload.single("image"),
           productValidations.validateCreateProduct,
         ],
         handler: productControllers.createProduct,
@@ -38,10 +38,10 @@ class productRoutes extends BaseRoutes {
         method: "put",
         path: "/products",
         middlewares: [
-          upload.single("image"),
           productValidations.requireId,
           productValidations.validateLogin,
           middlewares.checkUserAdmin,
+          upload.single("image"),
           productValidations.validateUpdateProduct,
         ],
         handler: productControllers.updateProduct,
@@ -52,7 +52,7 @@ class productRoutes extends BaseRoutes {
         middlewares: [
           productValidations.requireId,
           productValidations.validateLogin,
-          middlewares.checkUserAdmin
+          middlewares.checkUserAdmin,
         ],
         handler: productControllers.deleteProduct,
       },
