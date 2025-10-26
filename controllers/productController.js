@@ -1,4 +1,7 @@
 const { db } = require("../config/db");
+const { cloudinaryImageUpload } = require("../cloudinaryImageUploadService");
+const fs = require("fs");
+const path = require("path");
 /* 
   Products Controller
 
@@ -22,7 +25,7 @@ exports.getProducts = async (req, res) => {
       const productData = productDoc.data();
 
       return res.json({
-        imgUrl: productData.imgUrl,
+        downloadURL: productData.downloadURL,
         id: productDoc.id,
         title: productData.title,
         description: productData.description,
@@ -38,7 +41,7 @@ exports.getProducts = async (req, res) => {
 
     snapshot.forEach((user) => {
       products.push({
-        imgUrl: user.data().imgUrl,
+        downloadURL: user.data().downloadURL,
         id: user.id,
         title: user.data().title,
         description: user.data().description,
@@ -56,18 +59,48 @@ exports.getProducts = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const { imgUrl, title, description, price, onSale } = req.body;
+    const fs = require("fs");
+    const path = require("path");
+
+    // Extract fields from form data
+    const { title, description, price, onSale } = req.body;
+
+    // Get uploaded image file from multer
+    const imageFile = req.file;
+    if (!imageFile) {
+      return res.status(500).json({ message: "No image file uploaded" });
+    }
+
+    // Construct image URL (assuming static serving from /uploads)
+    const imgUrl = `/uploads/${imageFile.filename}`;
+
+    // Upload to Cloudinary using filename only
+    const uploadResult = await cloudinaryImageUpload(imageFile.filename);
+
+    // ✅ Delete local file if Cloudinary upload succeeded
+    if (uploadResult && uploadResult.success === true) {
+      const localPath = path.join("uploads", imageFile.filename);
+      fs.unlink(localPath, (err) => {
+        if (err) {
+          console.error("Failed to delete local file:", err.message);
+        } else {
+          console.log("Local file deleted:", imageFile.filename);
+        }
+      });
+    }
+
+    downloadURL = uploadResult.data.secure_url;
 
     // Store the collection reference in variable
     const productsRef = db.collection("products");
 
     // Create new document with auto-generated ID
     const newProductData = {
-      imgUrl,
       title,
       description,
       price,
       onSale,
+      downloadURL,
     };
     const newProductRef = await productsRef.add(newProductData);
 
@@ -95,7 +128,7 @@ exports.updateProduct = async (req, res) => {
     if (req.body.title) updateFields.title = req.body.title;
     if (req.body.price) updateFields.price = req.body.price;
     if (req.body.onSale) {
-      const onSale = req.body.onSale === "true"; 
+      const onSale = req.body.onSale === "true";
       updateFields.onSale = onSale;
     }
 

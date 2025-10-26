@@ -1,5 +1,8 @@
 const BaseRoutes = require("./BaseRoutes");
 const productControllers = require("../controllers/productController");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
 const eventValidations = {
   requireId: require("../validations/requireId"),
   validateLogin: require("../validations/validateLogin"),
@@ -21,6 +24,7 @@ class productRoutes extends BaseRoutes {
         method: "post",
         path: "/products",
         middlewares: [
+          upload.single("image"),
           eventValidations.validateLogin,
           eventValidations.validateCreateProduct,
         ],
