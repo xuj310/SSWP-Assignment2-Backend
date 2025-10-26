@@ -168,7 +168,7 @@ exports.updateProduct = async (req, res) => {
       }
     }
 
-    // Create update object with only provided fields
+    // Create update object with only provided fields. Gets around Firestore issue of sending undefined fields.
     const newProductData = {};
     if (title !== undefined) newProductData.title = title;
     if (description !== undefined) newProductData.description = description;
